@@ -24,7 +24,7 @@ start_global = datetime.datetime.now()
 interpreter.invoke()
 end_global = datetime.datetime.now()
 delta = end_global - start_global
-print(delta.total_seconds()*1000/(10), 'mS')
+print(delta.total_seconds()*1000, 'mS')
 
 output_details = interpreter.get_output_details()[0]
 output = interpreter.get_tensor(output_details['index'])
