@@ -18,20 +18,23 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()[0]
 interpreter.set_tensor(input_details['index'], input_array)
 
+interpreter.invoke()
+
 start_global = datetime.datetime.now()
-for i in range(10):
-	interpreter.invoke()
+interpreter.invoke()
 end_global = datetime.datetime.now()
 delta = end_global - start_global
 print(delta.total_seconds()*1000/(10), 'mS')
 
-'''
 output_details = interpreter.get_output_details()[0]
 output = interpreter.get_tensor(output_details['index'])
 scale, zero_point = output_details['quantization']
 output = scale * (output - zero_point)
 output = np.argmax(output)
-print(output)
-'''
+
+if(0 == output):
+	print('Rose')
+else:
+	print('Sunflower')
 
 #### end of file ####
