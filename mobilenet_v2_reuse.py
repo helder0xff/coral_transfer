@@ -1,6 +1,7 @@
 import tensorflow as tf
 import os
 import numpy as np
+import datetime
 
 ################################################################################
 #
@@ -17,8 +18,8 @@ BATCH_SIZE 		= 64
 # CONFIG.
 #
 ################################################################################
-datasets_path 	= '/media/helder/workspace/datasets'
-dataset_path    = datasets_path + '/flower_photos'                       
+datasets_path 	= '/home/helder/workspace/datasets'
+dataset_path    = datasets_path + '/flower_photos_minimal'                       
 
 ################################################################################
 #
@@ -27,7 +28,7 @@ dataset_path    = datasets_path + '/flower_photos'
 ################################################################################
 datagen = tf.keras.preprocessing.image.ImageDataGenerator(
 	rescale 			= 1./255, 
-    validation_split 	= 0.2)	# Set validation set to 20%
+   validation_split 	= 0.2)	# Set validation set to 20%
 
 train_generator = datagen.flow_from_directory(
     dataset_path,
@@ -63,6 +64,7 @@ base_model.trainable = False
 
 # Complete the base model for our own purpose ##################################
 number_classes = len(train_generator.class_indices)
+print(train_generator.class_indices)
 
 model = tf.keras.Sequential([
   base_model,
@@ -83,7 +85,7 @@ print(model.summary())
 if False == os.path.isfile('mobilenet_v2_1.0_224_quant.tflite'):
 	history = model.fit(train_generator,
 	                    steps_per_epoch 	= len(train_generator), 
-	                    epochs				= 10,
+	                    epochs				= 5,
 	                    validation_data		= val_generator,
 	                    validation_steps	= len(val_generator))
 
@@ -161,12 +163,17 @@ interpreter.allocate_tensors()
 batch_prediction = []
 batch_truth = np.argmax(batch_labels, axis=1)
 
+start_global = datetime.datetime.now()
 for i in range(len(batch_images)):
   prediction = classify_image(interpreter, batch_images[i])
   batch_prediction.append(prediction)
+end_global = datetime.datetime.now()
+delta = end_global - start_global
+print(delta.total_seconds()*1000/(len(batch_images)), 'mS')
 
 # Compare all predictions to the ground truth
 tflite_accuracy = tf.keras.metrics.Accuracy()
 tflite_accuracy(batch_prediction, batch_truth)
 print("Quant TF Lite accuracy: {:.3%}".format(tflite_accuracy.result()))
+
 #### end of file ####
