@@ -12,7 +12,7 @@ input_array = np.asarray(input_image)
 input_array = np.resize(input_array, IMAGE_SHAPE)
 input_array = np.expand_dims(input_array, axis=0)
 
-interpreter = make_interpreter('mobilenet_v2_1.0_224_quant_edgtpu.tflite')
+interpreter = make_interpreter('mobilenet_v2_1.0_224_quant_edgetpu.tflite')
 interpreter.allocate_tensors()
 
 input_details = interpreter.get_input_details()[0]
